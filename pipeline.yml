@@ -1,0 +1,39 @@
+resources:
+- name: apache-php-concourse
+  type: git
+  source:
+    uri: https://github.com/nwiizo/apache-php-concourse.git
+    branch: master
+
+- name: apache-php-concourse-docker-image
+  type: docker-image
+  source:
+    email: *****
+    username: *****
+    password: ******
+    repository: smotouchi/apache-php-concourse-docker-image
+
+jobs:
+- name: php build 5.3
+  public: true
+  serial: true
+  plan:
+  - get: apache-php-concourse
+  - put: apache-php-concourse-docker-image
+    params:
+      # tutorial -> get: tutorial
+      build: apache-php-concourse/docker/5.3
+  - task: run
+    config:
+      platform: linux
+      image_resource:
+         type: docker-image
+         source:
+           repository: smotouchi/apache-php-concourse-docker-image
+      run:
+        path: 'pwd'
+      caches:
+        - path: apache-php-concourse/m2 
+    params:
+      NAME: smotouchi
+
